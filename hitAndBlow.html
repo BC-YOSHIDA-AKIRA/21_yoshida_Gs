@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/jquery-2.1.3.min.js"></script>
-    <link rel="stylesheet" href="css/sample.css">
+    <link rel="stylesheet" href="css/style.css">
     <title>Document</title>
 </head>
 
@@ -15,103 +15,171 @@
     </header>
 
     <main>
-        <div id="startBtn">
-            <button type="button" onclick="startGame()">ゲームスタート</button>
+        <div>
+            <button id="startBtn" type="button" style="display: block;" onclick="startGame()">ゲームスタート</button>
+            <button id="stopBtn" type="button" style="display: none;" onclick="stopGame()">ゲーム終了</button>
         </div>
 
-        <div>
-            <div id="leftPlayer">
-                <form name="leftForm" onsubmit="return checkLeft(1)">
-                    <input type="text" id="inputLeft" maxlength="4" placeholder="例: 1234">
-                    <button type="submit" id="btnLeft" onclick="check('left')"> 回答</button>
+        <div id="gameMain">
+            <div>
+                <div id="result">
                     <div id="winLeft">win</div>
-                    <div id="loseLeft">Lose</div>
-                </form>
+                    <div id="loseRight">Lose</div>
+                </div>
+                <div id="leftPlayer">
+                    <h2 id="leftHead">Player1</h2>
+                    <form name="leftForm">
+                        <input type="text" id="inputLeft" maxlength="4" value=""><br>
+                        <button type="button" id="btnLeft" onclick="check('Left')"> 回答</button>
+                    </form>
+                </div>
             </div>
             <div id="guessLog">
                 <table id="logTable">
                     <thead>
-                        <tr>
-                            <th>player</th>
-                            <th>number</th>
-                            <th>judgment</th>
+                        <tr class="hr">
+                            <th class="b" style="width: 150px;">player</th>
+                            <th class="b" style="width: 150px;">number</th>
+                            <th class="b" style="width: 100px;">Hit</th>
+                            <th style="width: 100px;">Blow</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="rightPlayer">
-                <input type="text" id="inputRight" maxlength="4" placeholder="例: 1234">
-                <button type="submit" id="btnRight" onclick="check('right')"> 回答</button>
-                <div id="winRight">win</div>
-                <div id="loseRight">Lose</div>
+            <div>
+                <div id="result">
+                    <div id="winRight">win</div>
+                    <div id="loseLeft">Lose</div>
+                </div>
+                <div id="rightPlayer">
+                    <h2 id="rightHead">Player2</h2>
+                    <form name="rightForm">
+                        <input type="text" id="inputRight" maxlength="4" value=""><br>
+                        <button type="button" id="btnRight" onclick="check('Right')"> 回答</button>
+                    </form>
+                </div>
             </div>
-
-
         </div>
-
-
     </main>
 
 </body>
 
 <script>
-    let answer = "";
+    let answer = [];
     let gameActive = false;
+    const tbl = document.getElementById("logTable");
 
     function startGame() {
-        const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        for (let i = 0; i < 4; i++) {
-            answer 
+        console.log("スタートボタンが押された");
+        const num = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+        while (answer.length < 4) {
+            //let index = Math.floor(Math.random() * num.length);
+            const index = num[Math.ceil(Math.random() * num.length - 1)];
+            if (!answer.includes(index)) {
+                answer.splice(1, 0, index);
+            }
         }
+        console.log("正解：" + answer);
 
+        gameActive = true;
+
+        $('#tableBody').remove();
+
+        document.getElementById("winLeft").style.display = "none";
+        document.getElementById("loseLeft").style.display = "none";
+        document.getElementById("winRight").style.display = "none";
+        document.getElementById("loseRight").style.display = "none";
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("stopBtn").style.display = "block";
     }
 
-    function check(player) {
+    function check(side) {
         if (!gameActive) {
             return alert("スタートボタンを押してね！");
         }
 
-        var number = document.leftForm.mytext.value;
+        const getEl = document.getElementById(`input${side}`);
+        console.log(getEl);
+        let number = getEl.value;
 
-        if (chars == answer) {
-
-        } else {
-
-            const chars = number.split(""); // 1文字ごとに分割
-
-            let hit = 0;
-            let blow = 0;
-
-            for (let i = 0; i < 4; i++) {
-                if (chars[i] == ans[j]) {
-                    hit++;
-                } else if (answer.includes(chars[i])) {
-                    blow++;
-                }
-            }
-
-            let judgment = "";
-            judgment = hitCount + "Hit：" + blowCount + "Blow";
-
-
+        if (number.length != 4) {
+            return alert("4桁の数字を入力してね！");
         }
 
+        const chars = number.split(""); // 1文字ごとに分割
+
+        let hit = 0;
+        let blow = 0;
+        const blowLog = [];
+        const blowNum = [];
+
+        console.log(chars[0]);
+        console.log(answer.includes(chars[0]));
+        console.log(answer);
+        console.log(chars);
+
+        for (let i = 0; i < 4; i++) {
+            if (chars[i] == answer[i]) {
+                hit++;
+            } else {
+                blowLog.splice(1, 0, i);
+            }
+        }
+
+        for (let i of blowLog) {
+            for (let j of blowLog) {
+                console.log("index" + i + ":" + j);
+                console.log(chars[i] + ":" + answer[j]);
+                if (i != j && chars[i] == answer[j] && !blowNum.includes(chars[i])) {
+                    console.log("blow" + chars[i] + ":" + answer[j]);
+                    blow++;
+                    blowNum.splice(1, 0, chars[i]);
+                }
+            }
+        }
+
+
+        addTable(side, number, hit, blow)
+        getEl.value = "";
+
+        if (hit == 4) {
+            document.getElementById(`win${side}`).style.display = "block";
+            document.getElementById(`lose${side}`).style.display = "block";
+            document.getElementById("startBtn").style.display = "block";
+            document.getElementById("stopBtn").style.display = "none";
+            gameActive = false;
+        }
 
     }
 
-    function addTable() {
+
+
+    function addTable(side, number, hit, blow) {
 
         //空の行要素を先に作成tr
         let tr = document.createElement("tr");
+        tr.className = 'r';
 
-        //以下、繰り返し処理 
-        for (let i = 0; i < 3; i++) {
-            let td = document.createElement("td");      //新しいtd要素を作って変数tdに格納
-            let inp = document.createElement("input");  //tdに何か追加。ここは例としてinput
-            td.appendChild(inp);        //tdにinpを追加
-            tr.appendChild(td);         //trにtdを追加
-        }
+
+        let tdP = document.createElement("td");
+        tdP.className = 'b';
+        tdP.textContent = side;        //tdにinpを追加
+        tr.appendChild(tdP);         //trにtdを追加
+
+        let tdN = document.createElement("td");      //新しいtd要素を作って変数tdに格納
+        tdN.className = 'b';
+        tdN.textContent = number;        //tdにinpを追加
+        tr.appendChild(tdN);         //trにtdを追加            
+
+        let tdH = document.createElement("td");      //新しいtd要素を作って変数tdに格納
+        tdH.className = 'b';
+        tdH.textContent = hit;        //tdにinpを追加
+        tr.appendChild(tdH);         //trにtdを追加
+
+        let tdB = document.createElement("td");      //新しいtd要素を作って変数tdに格納
+        tdB.textContent = blow;        //tdにinpを追加
+        tr.appendChild(tdB);         //trにtdを追加
 
         //完成したtrをtableに追加
         tbl.appendChild(tr);
