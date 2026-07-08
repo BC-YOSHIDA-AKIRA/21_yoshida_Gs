@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <link rel="stylesheet" href="css/sample.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <header>
+        <h1>Hit & Blow</h1>
+    </header>
+
+    <main>
+        <div id="startBtn">
+            <button type="button" onclick="startGame()">ゲームスタート</button>
+        </div>
+
+        <div>
+            <div id="leftPlayer">
+                <form name="leftForm" onsubmit="return checkLeft(1)">
+                    <input type="text" id="inputLeft" maxlength="4" placeholder="例: 1234">
+                    <button type="submit" id="btnLeft" onclick="check('left')"> 回答</button>
+                    <div id="winLeft">win</div>
+                    <div id="loseLeft">Lose</div>
+                </form>
+            </div>
+            <div id="guessLog">
+                <table id="logTable">
+                    <thead>
+                        <tr>
+                            <th>player</th>
+                            <th>number</th>
+                            <th>judgment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <div id="rightPlayer">
+                <input type="text" id="inputRight" maxlength="4" placeholder="例: 1234">
+                <button type="submit" id="btnRight" onclick="check('right')"> 回答</button>
+                <div id="winRight">win</div>
+                <div id="loseRight">Lose</div>
+            </div>
+
+
+        </div>
+
+
+    </main>
+
+</body>
+
+<script>
+    let answer = "";
+    let gameActive = false;
+
+    function startGame() {
+        const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        for (let i = 0; i < 4; i++) {
+            
+        }
+
+    }
+
+    function check(player) {
+        if (!gameActive) {
+            return alert("スタートボタンを押してね！");
+        }
+
+        var number = document.leftForm.mytext.value;
+
+        if (chars == answer) {
+
+        } else {
+
+            const chars = number.split(""); // 1文字ごとに分割
+
+            let hit = 0;
+            let blow = 0;
+
+            for (let i = 0; i < 4; i++) {
+                if (chars[i] == ans[j]) {
+                    hit++;
+                } else if (answer.includes(chars[i])) {
+                    blow++;
+                }
+            }
+
+            let judgment = "";
+            judgment = hitCount + "Hit：" + blowCount + "Blow";
+
+
+        }
+
+
+    }
+
+    function addTable() {
+
+        //空の行要素を先に作成tr
+        let tr = document.createElement("tr");
+
+        //以下、繰り返し処理 
+        for (let i = 0; i < 3; i++) {
+            let td = document.createElement("td");      //新しいtd要素を作って変数tdに格納
+            let inp = document.createElement("input");  //tdに何か追加。ここは例としてinput
+            td.appendChild(inp);        //tdにinpを追加
+            tr.appendChild(td);         //trにtdを追加
+        }
+
+        //完成したtrをtableに追加
+        tbl.appendChild(tr);
+    }
+
+
+</script>
+
+</html>
