@@ -128,7 +128,9 @@ body {
 #winLeft,
 #winRight,
 #loseLeft,
-#loseRight {
+#loseRight,
+#drawLeft,
+#drawRight {
     display: none;
     font-size: 100px;
     font-weight: 900;
@@ -139,4 +141,21 @@ body {
     width: 400px;
     text-align: center;
     margin: auto;
+}
+
+#countDownLeft,
+#countDownRight {
+    background-image: url("../img/timer.png");
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+#timeLeft,
+#timeRight {
+    text-align: center;
+    font-size: 60px;
+    padding: 20px;
+    border: none;
+    margin-left: 100px;
 }

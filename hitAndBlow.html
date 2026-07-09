@@ -25,6 +25,10 @@
                 <div id="result">
                     <div id="winLeft">win</div>
                     <div id="loseRight">Lose</div>
+                    <div id="drawLeft">Draw</div>
+                    <div id="countDownLeft" style="display: none;">
+                        <div id="timeLeft">00:00</div>
+                    </div>
                 </div>
                 <div id="leftPlayer">
                     <h2 id="leftHead">Player1</h2>
@@ -51,6 +55,10 @@
                 <div id="result">
                     <div id="winRight">win</div>
                     <div id="loseLeft">Lose</div>
+                    <div id="drawRight">Draw</div>
+                    <div id="countDownRight" style="display: none;">
+                        <div id="timeRight">00:00</div>
+                    </div>
                 </div>
                 <div id="rightPlayer">
                     <h2 id="rightHead">Player2</h2>
@@ -68,13 +76,16 @@
 <script>
     let answer = [];
     let gameActive = false;
-    const tbl = document.getElementById("logTable");
+    const tbl = document.getElementById("tableBody");
+    let stopTimer;
+    let time;
+    let targetTime;
 
     function startGame() {
+        answer = [];
         console.log("スタートボタンが押された");
         const num = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
         while (answer.length < 4) {
-            //let index = Math.floor(Math.random() * num.length);
             const index = num[Math.ceil(Math.random() * num.length - 1)];
             if (!answer.includes(index)) {
                 answer.splice(1, 0, index);
@@ -84,14 +95,29 @@
 
         gameActive = true;
 
-        $('#tableBody').remove();
+        $('#tableBody').empty();
 
+        document.getElementById("countDownLeft").style.display = "block";
+        document.getElementById("countDownRight").style.display = "none";
         document.getElementById("winLeft").style.display = "none";
         document.getElementById("loseLeft").style.display = "none";
         document.getElementById("winRight").style.display = "none";
         document.getElementById("loseRight").style.display = "none";
+        document.getElementById("drawLeft").style.display = "none";
+        document.getElementById("drawRight").style.display = "none";
         document.getElementById("startBtn").style.display = "none";
         document.getElementById("stopBtn").style.display = "block";
+        timer("Left");
+    }
+
+    function stopGame() {
+        gameActive = false;
+        document.getElementById("drawLeft").style.display = "block";
+        document.getElementById("drawRight").style.display = "block";
+        document.getElementById("startBtn").style.display = "block";
+        document.getElementById("stopBtn").style.display = "none";
+        document.getElementById("countDownLeft").style.display = "none";
+        document.getElementById("countDownRight").style.display = "none";
     }
 
     function check(side) {
@@ -114,11 +140,6 @@
         const blowLog = [];
         const blowNum = [];
 
-        console.log(chars[0]);
-        console.log(answer.includes(chars[0]));
-        console.log(answer);
-        console.log(chars);
-
         for (let i = 0; i < 4; i++) {
             if (chars[i] == answer[i]) {
                 hit++;
@@ -129,10 +150,7 @@
 
         for (let i of blowLog) {
             for (let j of blowLog) {
-                console.log("index" + i + ":" + j);
-                console.log(chars[i] + ":" + answer[j]);
                 if (i != j && chars[i] == answer[j] && !blowNum.includes(chars[i])) {
-                    console.log("blow" + chars[i] + ":" + answer[j]);
                     blow++;
                     blowNum.splice(1, 0, chars[i]);
                 }
@@ -148,18 +166,29 @@
             document.getElementById(`lose${side}`).style.display = "block";
             document.getElementById("startBtn").style.display = "block";
             document.getElementById("stopBtn").style.display = "none";
+            document.getElementById("countDownLeft").style.display = "none";
+            document.getElementById("countDownRight").style.display = "none";
             gameActive = false;
+        } else {
+            clearInterval(interval);
+            document.getElementById(`countDown${side}`).style.display = "none";
+            if (side == "Left") {
+                document.getElementById("countDownRight").style.display = "block";
+                timer("Right");
+            } else {
+                document.getElementById("countDownLeft").style.display = "block";
+                timer("Left");
+            }
         }
 
     }
-
-
 
     function addTable(side, number, hit, blow) {
 
         //空の行要素を先に作成tr
         let tr = document.createElement("tr");
         tr.className = 'r';
+        tr.id = 'rId';
 
 
         let tdP = document.createElement("td");
@@ -183,6 +212,40 @@
 
         //完成したtrをtableに追加
         tbl.appendChild(tr);
+    }
+
+    function updateCountDown(side) {
+        const now = new Date().getTime();
+        const distance = targetTime - now;
+
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        console.log("い" + time);
+
+        time.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        if (distance < 0) {
+
+            clearInterval(interval);
+            document.getElementById(`countDown${side}`).style.display = "none";
+            if (side == "Left") {
+                document.getElementById("countDownRight").style.display = "block";
+                timer("Right");
+            } else {
+                document.getElementById("countDownLeft").style.display = "block";
+                timer("Left");
+            }
+        }
+    }
+
+    function timer(side) {
+        time = document.getElementById(`time${side}`);
+        targetTime = new Date().getTime() + 8000;
+        console.log("あ" + time);
+
+        interval = setInterval(updateCountDown, 1000);
+        updateCountDown(side);
     }
 
 
