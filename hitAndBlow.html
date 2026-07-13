@@ -5,117 +5,436 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="js/jquery-2.1.3.min.js"></script>
-    <link rel="stylesheet" href="css/sample.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.2/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
     <title>Document</title>
 </head>
 
 <body>
-    <header>
-        <h1>Hit & Blow</h1>
-    </header>
+    <audio id="fightBgm" src="img/fightBgm.mp3"></audio>
+    <audio id="hitS" src="img/hitS.mp3"></audio>
+    <audio id="blowS" src="img/blowS.mp3"></audio>
+    <audio id="NoS" src="img/NoS.mp3"></audio>
+    <audio id="butS" src="img/butS.mp3"></audio>
+    <audio id="koraAudio" src="img/kora_voice.m4a"></audio>
+    <audio id="shimaAudio" src="img/shima_voice.m4a"></audio>
+    <div class="snow-container">
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+        <span class="snowflake-svg"></span>
+    </div>
 
     <main>
-        <div id="startBtn">
-            <button type="button" onclick="startGame()">ゲームスタート</button>
-        </div>
+        <div id="left">
 
-        <div>
+            <img id="koraHit" src="img/kora_hit.jpeg">
+            <img id="koraBut" src="img/kora_but.jpeg">
             <div id="leftPlayer">
-                <form name="leftForm" onsubmit="return checkLeft(1)">
-                    <input type="text" id="inputLeft" maxlength="4" placeholder="例: 1234">
-                    <button type="submit" id="btnLeft" onclick="check('left')"> 回答</button>
-                    <div id="winLeft">win</div>
-                    <div id="loseLeft">Lose</div>
+                <div id="result">
+                    <div id="countDownLeft">
+                        <div id="timeLeft">00:00</div>
+                    </div>
+                </div>
+
+                <form id="formLeft" style="display: none;">
+                    <input type="text" id="inputLeft" inputmode="numeric" maxlength="4" value="">
+                    <button type="button" id="btnLeft" onclick="check('Left')"> 回答</button>
                 </form>
             </div>
+        </div>
+
+        <div id="gameMain">
+
+            <form>
+                <button id="startBtn" type="button" style="display: block;" onclick="startGame()">ゲームスタート</button>
+                <button id="stopBtn" type="button" style="display: none;" onclick="stopGame()">ゲーム終了</button>
+                <div id="setTime">１ターン：<input type="text" id="seconds" value="30">秒</div>
+            </form>
+
+
             <div id="guessLog">
                 <table id="logTable">
                     <thead>
-                        <tr>
-                            <th>player</th>
-                            <th>number</th>
-                            <th>judgment</th>
+                        <tr class="hr">
+                            <th class="b" style="width: 120px;">player</th>
+                            <th class="b" style="width: 120px;">guess</th>
+                            <th class="b" style="width: 90px;">Hit</th>
+                            <th style="width: 90px;">Blow</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
-            <div id="rightPlayer">
-                <input type="text" id="inputRight" maxlength="4" placeholder="例: 1234">
-                <button type="submit" id="btnRight" onclick="check('right')"> 回答</button>
-                <div id="winRight">win</div>
-                <div id="loseRight">Lose</div>
+            <div id="describe">
+                <p>ルール：１～９の４桁の数字を当ててください</p>
+                <p>　※正解の数字に重複はありません</p>
+                <p>　※半角数字で入力してください</p>
+                <p>　※Hit:数字と位置が一致</p>
+                <p>　※Blow:数字は一致するが位置が違う</p>
             </div>
 
 
         </div>
+        <div id="right">
+            <img id="shimaHit" src="img/shima_hit.jpg">
+            <img id="shimaBut" src="img/shima_but.jpg">
+            <div id="rightPlayer">
+                <div id="result">
+                    <div id="countDownRight">
+                        <div id="timeRight">00:00</div>
+                    </div>
+                </div>
 
-
+                <form id="formRight" style="display: none;">
+                    <input type="text" id="inputRight" maxlength="4" value="">
+                    <button type="button" id="btnRight" onclick="check('Right')"> 回答</button>
+                </form>
+            </div>
+        </div>
     </main>
+    <div id="black">
+        <img src="img/black.png">
+
+    </div>
 
 </body>
 
 <script>
-    let answer = "";
+    let answer = [];
     let gameActive = false;
+    const tbl = document.getElementById("tableBody");
+    let stopTimer;
+    let interval;
+    let limitTime = 30;
 
+    // ゲームスタート処理
     function startGame() {
-        const num = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        for (let i = 0; i < 4; i++) {
-            answer 
-        }
+        const getTime = document.getElementById("seconds");
+        let limitTime = getTime.value;
 
+        //答えの生成
+        answer = [];
+        const num = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+        while (answer.length < 4) {
+            const index = num[Math.ceil(Math.random() * num.length - 1)];
+            if (!answer.includes(index)) {
+                answer.splice(1, 0, index);
+            }
+        }
+        console.log("正解：" + answer);
+
+        //処理の呼び出し
+        gameActive = true;
+        $('#tableBody').empty();
+        timer("Left", limitTime);
+        effectStopKora();
+        effectStopShima();
+        bgm("fightBgm");
+
+        //表示切替
+        document.getElementById("timeLeft").style.display = "block";
+        document.getElementById("timeRight").style.display = "none";
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("stopBtn").style.display = "block";
+        document.getElementById("formLeft").style.display = "block";
     }
 
-    function check(player) {
-        if (!gameActive) {
-            return alert("スタートボタンを押してね！");
+    // ゲーム終了処理
+    function stopGame() {
+        //処理の実行
+        gameActive = false;
+        clearInterval(interval);
+        effectStop();
+        stopVoice("fightBgm");
+        $('#tableBody').empty();
+
+        //表示切替
+        document.getElementById("startBtn").style.display = "block";
+        document.getElementById("stopBtn").style.display = "none";
+        document.getElementById("timeLeft").style.display = "none";
+        document.getElementById("timeRight").style.display = "none";
+        document.getElementById("formLeft").style.display = "none";
+        document.getElementById("formRight").style.display = "none";
+        document.getElementById("inputLeft").value = "";
+        document.getElementById("inputRight").value = "";
+    }
+
+    // 数字の判定
+    function check(side) {
+        const getEl = document.getElementById(`input${side}`);
+        let number = getEl.value;
+
+        // バリデーションチェック
+        if (number.length != 4 && !number.match(/^[1-9]+$/)) {
+            return alert("4桁の数字を入力してね！\n1～9の半角数字を入力してね！");
+        } else if (number.length != 4) {
+            return alert("4桁の数字を入力してね！");
+        } else if (!number.match(/^[1-9]+$/)) {
+            return alert("1～9の半角数字を入力してね！");
         }
 
-        var number = document.leftForm.mytext.value;
+        // 判定処理
+        const chars = number.split(""); // 1文字ごとに分割
+        let hit = 0;
+        let blow = 0;
+        const blowLog = [];
+        const blowNum = [];
 
-        if (chars == answer) {
+        for (let i = 0; i < 4; i++) {
+            if (chars[i] == answer[i]) {
+                hit++;
+            } else {
+                blowLog.splice(1, 0, i);
+            }
+        }
 
-        } else {
-
-            const chars = number.split(""); // 1文字ごとに分割
-
-            let hit = 0;
-            let blow = 0;
-
-            for (let i = 0; i < 4; i++) {
-                if (chars[i] == ans[j]) {
-                    hit++;
-                } else if (answer.includes(chars[i])) {
+        for (let i of blowLog) {
+            for (let j of blowLog) {
+                if (i != j && chars[i] == answer[j] && !blowNum.includes(chars[i])) {
                     blow++;
+                    blowNum.splice(1, 0, chars[i]);
                 }
             }
-
-            let judgment = "";
-            judgment = hitCount + "Hit：" + blowCount + "Blow";
-
-
         }
 
+        // ログターブルに追加
+        addTable(side, number, hit, blow)
+        getEl.value = "";
+
+        // 判定後の処理分岐
+        if (hit == 4) {
+            //正解時の処理
+            gameActive = false;
+            clearInterval(interval);
+            stopVoice("fightBgm");
+            effectStop();
+            if (side == "Left") {
+                effectWinKora();
+                voice("koraAudio");
+            } else {
+                effectWinShima();
+                voice("shimaAudio");
+            }
+
+            // 正解時の表示切替
+            document.getElementById("startBtn").style.display = "block";
+            document.getElementById("stopBtn").style.display = "none";
+            document.getElementById("timeLeft").style.display = "none";
+            document.getElementById("timeRight").style.display = "none";
+            document.getElementById("formLeft").style.display = "none";
+            document.getElementById("formRight").style.display = "none";
+
+        } else {
+            clearInterval(interval);
+            document.getElementById(`time${side}`).style.display = "none";
+            document.getElementById(`form${side}`).style.display = "none";
+            if (side == "Left") {
+                if (hit > 0) {
+                    effect("koraHit");
+                    voice("hitS");
+                } else {
+                    effect("koraBut");
+                    if (blow > 0) {
+                        voice("blowS");
+                    } else {
+                        voice("NoS");
+                    }
+
+                }
+                document.getElementById("timeRight").style.display = "block";
+                document.getElementById("formRight").style.display = "block";
+                timer("Right", limitTime);
+            } else {
+                if (hit > 0) {
+                    effect("shimaHit");
+                    voice("hitS");
+                } else {
+                    effect("shimaBut");
+                    if (blow > 0) {
+                        voice("blowS");
+                    } else {
+                        voice("NoS");
+                    }
+                }
+                document.getElementById("timeLeft").style.display = "block";
+                document.getElementById("formLeft").style.display = "block";
+                timer("Left", limitTime);
+            }
+        }
 
     }
 
-    function addTable() {
+    // ログテーブルへの追加
+    function addTable(side, number, hit, blow) {
 
         //空の行要素を先に作成tr
         let tr = document.createElement("tr");
-
-        //以下、繰り返し処理 
-        for (let i = 0; i < 3; i++) {
-            let td = document.createElement("td");      //新しいtd要素を作って変数tdに格納
-            let inp = document.createElement("input");  //tdに何か追加。ここは例としてinput
-            td.appendChild(inp);        //tdにinpを追加
-            tr.appendChild(td);         //trにtdを追加
+        if (hit == 4) {
+            tr.className = "clear";
+        } else if (hit > 0) {
+            tr.className = "hitHr";
+        } else {
+            tr.className = 'nr';
         }
+        tr.id = 'rId';
+
+        let imageclass = "";
+
+        if (side == "Left") {
+            imageclass = "korasyo";
+        } else {
+            imageclass = "shimajiro";
+        }
+
+
+
+        let tdP = document.createElement("td");
+        tdP.className = imageclass;
+        tr.appendChild(tdP);         //trにtdを追加
+
+        let tdN = document.createElement("td");      //新しいtd要素を作って変数tdに格納
+        tdN.className = 'b';
+        tdN.textContent = number;        //tdにinpを追加
+        tr.appendChild(tdN);         //trにtdを追加            
+
+        let tdH = document.createElement("td");      //新しいtd要素を作って変数tdに格納
+        tdH.className = 'b';
+        tdH.textContent = hit;        //tdにinpを追加
+        tr.appendChild(tdH);         //trにtdを追加
+
+        let tdB = document.createElement("td");      //新しいtd要素を作って変数tdに格納
+        tdB.textContent = blow;        //tdにinpを追加
+        tr.appendChild(tdB);         //trにtdを追加
 
         //完成したtrをtableに追加
         tbl.appendChild(tr);
+        let target = document.getElementById('logTable');
+        target.scrollIntoView(false);
     }
+
+    function timer(side, limitTime) {
+
+        const time = document.getElementById(`time${side}`);
+        const targetTime = new Date().getTime() + limitTime * 1000;
+
+        function updateCountDown() {
+            const now = new Date().getTime();
+            const distance = targetTime - now;
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            time.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (distance < 0) {
+                clearInterval(interval);
+                effectStop();
+                document.getElementById(`time${side}`).style.display = "none";
+                document.getElementById(`form${side}`).style.display = "none";
+                voice("butS");
+                if (side == "Left") {
+                    document.getElementById("timeRight").style.display = "block";
+                    document.getElementById("formRight").style.display = "block";
+                    timer("Right", limitTime);
+                } else {
+                    document.getElementById("timeLeft").style.display = "block";
+                    document.getElementById("formLeft").style.display = "block";
+                    timer("Left", limitTime);
+                }
+
+            }
+        }
+        interval = setInterval(updateCountDown, 1);
+        updateCountDown();
+    }
+
+    function effect(mode) {
+        const element = document.getElementById(`${mode}`);
+        // element.style.transform = `translateY(2000px)`;
+        // const box = document.getElementById('box');
+        let elements = document.getElementsByTagName("img");
+        Array.prototype.forEach.call(elements, function (element) {
+            element.classList.remove("animate");
+        });
+
+        element.classList.add('animate');
+
+
+    }
+
+    function effectWinKora(mode) {
+        let elements = document.getElementsByTagName("span");
+        Array.prototype.forEach.call(elements, function (element) {
+            element.classList.add("winKora");
+        });
+    }
+
+    function effectWinShima(mode) {
+        let elements = document.getElementsByTagName("span");
+        Array.prototype.forEach.call(elements, function (element) {
+            element.classList.add("winShima");
+        });
+    }
+
+    function effectStopKora() {
+        let elements = document.getElementsByTagName("span");
+        Array.prototype.forEach.call(elements, function (element) {
+            element.classList.remove("winKora");
+        });
+    }
+
+    function effectStopShima() {
+        let elements = document.getElementsByTagName("span");
+        Array.prototype.forEach.call(elements, function (element) {
+            element.classList.remove("winShima");
+        });
+    }
+
+    function effectStop() {
+        let elements = document.getElementsByTagName("img");
+        Array.prototype.forEach.call(elements, function (element) {
+            element.classList.remove("animate");
+        });
+
+    }
+
+    function voice(voice) {
+        var audio = document.getElementById(voice);
+        audio.currentTime = 0;
+        audio.play();
+    }
+
+    function bgm(voice) {
+        var audio = document.getElementById(voice);
+        audio.currentTime = 0;
+        audio.volume = 0.2;
+        audio.play();
+    }
+
+    function stopVoice(voice) {
+        var audio = document.getElementById(voice);
+        audio.pause();
+    }
+
+
 
 
 </script>
