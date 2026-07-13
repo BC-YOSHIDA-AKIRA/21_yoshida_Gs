@@ -124,10 +124,12 @@
     let interval;
     let limitTime = 30;
 
+    // ゲームスタート処理
     function startGame() {
         const getTime = document.getElementById("seconds");
         let limitTime = getTime.value;
 
+        //答えの生成
         answer = [];
         const num = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
         while (answer.length < 4) {
@@ -138,32 +140,32 @@
         }
         console.log("正解：" + answer);
 
+        //処理の呼び出し
         gameActive = true;
-
         $('#tableBody').empty();
-
-        document.getElementById("timeLeft").style.display = "block";
-        document.getElementById("timeRight").style.display = "none";
-        // document.getElementById("winLeft").style.display = "none";
-        // document.getElementById("loseLeft").style.display = "none";
-        // document.getElementById("winRight").style.display = "none";
-        // document.getElementById("loseRight").style.display = "none";
-        // document.getElementById("drawLeft").style.display = "none";
-        // document.getElementById("drawRight").style.display = "none";
-        document.getElementById("startBtn").style.display = "none";
-        document.getElementById("stopBtn").style.display = "block";
-        document.getElementById("formLeft").style.display = "block";
         timer("Left", limitTime);
         effectStopKora();
         effectStopShima();
         bgm("fightBgm");
+
+        //表示切替
+        document.getElementById("timeLeft").style.display = "block";
+        document.getElementById("timeRight").style.display = "none";
+        document.getElementById("startBtn").style.display = "none";
+        document.getElementById("stopBtn").style.display = "block";
+        document.getElementById("formLeft").style.display = "block";
     }
 
+    // ゲーム終了処理
     function stopGame() {
+        //処理の実行
         gameActive = false;
         clearInterval(interval);
-        // document.getElementById("drawLeft").style.display = "block";
-        // document.getElementById("drawRight").style.display = "block";
+        effectStop();
+        stopVoice("fightBgm");
+        $('#tableBody').empty();
+
+        //表示切替
         document.getElementById("startBtn").style.display = "block";
         document.getElementById("stopBtn").style.display = "none";
         document.getElementById("timeLeft").style.display = "none";
@@ -172,15 +174,14 @@
         document.getElementById("formRight").style.display = "none";
         document.getElementById("inputLeft").value = "";
         document.getElementById("inputRight").value = "";
-        effectStop();
-        stopVoice("fightBgm");
-        $('#tableBody').empty();
     }
 
+    // 数字の判定
     function check(side) {
         const getEl = document.getElementById(`input${side}`);
         let number = getEl.value;
 
+        // バリデーションチェック
         if (number.length != 4 && !number.match(/^[1-9]+$/)) {
             return alert("4桁の数字を入力してね！\n1～9の半角数字を入力してね！");
         } else if (number.length != 4) {
@@ -189,8 +190,8 @@
             return alert("1～9の半角数字を入力してね！");
         }
 
+        // 判定処理
         const chars = number.split(""); // 1文字ごとに分割
-
         let hit = 0;
         let blow = 0;
         const blowLog = [];
@@ -213,22 +214,17 @@
             }
         }
 
-
+        // ログターブルに追加
         addTable(side, number, hit, blow)
         getEl.value = "";
 
+        // 判定後の処理分岐
         if (hit == 4) {
-            clearInterval(interval);
-            // document.getElementById(`win${side}`).style.display = "block";
-            // document.getElementById(`lose${side}`).style.display = "block";
-            document.getElementById("startBtn").style.display = "block";
-            document.getElementById("stopBtn").style.display = "none";
-            document.getElementById("timeLeft").style.display = "none";
-            document.getElementById("timeRight").style.display = "none";
-            document.getElementById("formLeft").style.display = "none";
-            document.getElementById("formRight").style.display = "none";
+            //正解時の処理
             gameActive = false;
+            clearInterval(interval);
             stopVoice("fightBgm");
+            effectStop();
             if (side == "Left") {
                 effectWinKora();
                 voice("koraAudio");
@@ -237,9 +233,15 @@
                 voice("shimaAudio");
             }
 
-            effectStop();
-        } else {
+            // 正解時の表示切替
+            document.getElementById("startBtn").style.display = "block";
+            document.getElementById("stopBtn").style.display = "none";
+            document.getElementById("timeLeft").style.display = "none";
+            document.getElementById("timeRight").style.display = "none";
+            document.getElementById("formLeft").style.display = "none";
+            document.getElementById("formRight").style.display = "none";
 
+        } else {
             clearInterval(interval);
             document.getElementById(`time${side}`).style.display = "none";
             document.getElementById(`form${side}`).style.display = "none";
@@ -279,6 +281,7 @@
 
     }
 
+    // ログテーブルへの追加
     function addTable(side, number, hit, blow) {
 
         //空の行要素を先に作成tr
