@@ -1,0 +1,324 @@
+html {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+body {
+    margin: 0px;
+}
+
+main {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+h1 {
+    width: 100%;
+    text-align: center;
+    background-color: #1e71ff;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    color: #ffffff;
+}
+
+/* ====================================================== */
+
+#addDataBox {
+    height: 100vh;
+    width: 34%;
+    background-color: #f1faff;
+}
+
+#addMemberBox {
+    height: 35vh;
+    width: 100%;
+    border-bottom: 2px solid #000;
+    text-align: center;
+}
+
+#memberInputBox {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#addMemberInput {
+    height: 30px;
+    width: 60%;
+    margin-right: 5px;
+    background-color: #ffffff;
+}
+
+#addMemberBtn {
+    height: 35px;
+    width: 60px;
+    vertical-align: middle;
+    font-size: 18px;
+}
+
+#displayMember {
+    font-size: 20px;
+}
+
+#displayMemberBox {
+    height: 20vh;
+    width: 90%;
+    border: 1px solid #828282;
+    margin: auto;
+    overflow: auto;
+    background-color: #ffffff;
+}
+
+#displayMemberTable {
+    text-align: left;
+}
+
+/* ====================================================== */
+
+#addHistoryBox {
+    height: 65vh;
+    width: 100%;
+    text-align: center;
+}
+
+#addHistoryMian {
+    margin-top: 10px;
+    font-size: 25px;
+}
+
+#addWhoInput {
+    height: 40px;
+    width: 40%;
+    font-size: 20px;
+    background-color: #ffffff;
+}
+
+#whoseBox {
+    height: 25vh;
+    width: 90%;
+    border: 1px solid #828282;
+    margin: 15px auto 10px auto;
+    overflow: auto;
+    text-align: left;
+    background-color: #ffffff;
+}
+
+#no {
+    margin-bottom: 15px;
+}
+
+#addWhatInput {
+    height: 30px;
+    width: 40%;
+    font-size: 20px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+}
+
+#addHowMuchInput {
+    height: 30px;
+    width: 40%;
+    font-size: 20px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+}
+
+#addHistoryBtn {
+    height: 50px;
+    width: 80%;
+    margin: auto;
+    font-size: 25px;
+}
+
+/* ====================================================== */
+
+#historyBox {
+    height: 100vh;
+    width: 33%;
+    border-left: 2px solid #000;
+    border-right: 2px solid #000;
+}
+
+#historyInBox {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+.hisBox {
+    display: flex;
+    border-bottom: 2px solid #6f6f6f;
+}
+
+.hisBtnBox {
+    height: 100%;
+    width: 15%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    background-color: #bbe8ff;
+}
+
+.hisBtnBox button {
+    height: 90%;
+    width: 30px;
+    margin: 0px 1px;
+}
+
+.oneHistory {
+    height: 50px;
+    width: 85%;
+    vertical-align: middle;
+    border-right: 2px dotted #a6a6a6;
+}
+
+.topDiv {
+    height: 25px;
+    width: 100%;
+    border-bottom: 1px solid #a6a6a6;
+    display: flex;
+    background-color: #dff4ff;
+}
+
+.divWho {
+    height: 100%;
+    width: 40%;
+    border-right: 2px dotted #a6a6a6;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding-left: 10px;
+}
+
+.divWhat {
+    height: 100%;
+    width: 40%;
+    border-right: 2px dotted #a6a6a6;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding-left: 10px;
+}
+
+.divHowMuch {
+    height: 100%;
+    width: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    padding-right: 10px;
+}
+
+.bottomDiv {
+    height: 25px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding-left: 10px;
+}
+
+/* ====================================================== */
+
+#resultBox {
+    height: 100vh;
+    width: 33%;
+}
+
+#result {
+    height: 70vh;
+    width: 100%;
+    border-bottom: 2px solid #000;
+    overflow: auto;
+}
+
+.oneResult1,
+.oneResult2 {
+    height: 50px;
+    width: 100%;
+    /* border-bottom: 2px solid #8a8a8a; */
+    display: flex;
+}
+
+.oneResult1 {
+    background-color: #bbe8ff;
+}
+
+.oneResult2 {
+    background-color: #dff4ff;
+}
+
+.divFrom {
+    height: 100%;
+    width: 35%;
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    justify-content: center;
+
+}
+
+.divY {
+    height: 100%;
+    width: 5%;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+}
+
+.divTo {
+    height: 100%;
+    width: 35%;
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    justify-content: center;
+}
+
+
+.divAmount {
+    height: 100%;
+    width: 25%;
+    display: flex;
+    align-items: center;
+    font-size: 30px;
+    justify-content: right;
+    padding-right: 10px;
+    border-left: 2px dotted #8a8a8a;
+}
+
+
+/* ====================================================== */
+
+#resetBox {
+    height: 30vh;
+    width: 100%;
+    text-align: center;
+    background-color: #f1faff;
+}
+
+#picTitleInput {
+    margin-top: 20px;
+    height: 30px;
+    width: 50%;
+}
+
+
+#pictureBtn {
+    height: 80px;
+    width: 90%;
+    margin: 5px 0px 10px 0px;
+    font-size: 30px;
+}
+
+#resetBtn {
+    height: 80px;
+    width: 90%;
+    margin: 10px 0px;
+    font-size: 30px;
+}
