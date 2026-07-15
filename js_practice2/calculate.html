@@ -16,7 +16,7 @@
             <div id="addMemberBox">
                 <h1>メンバー追加</h1>
                 <div id="memberInputBox">
-                    <input type="text" id="addMemberInput">
+                    <input type="text" id="addMemberInput" placeholder="メンバー名">
                     <button type="button" id="addMemberBtn" onclick="addMember()">追加</button>
                 </div>
                 <div id="displayMember">
@@ -31,12 +31,12 @@
                 <h1>立て替え追加</h1>
                 <div id="addHistoryMian">
                     <select id="addWhoInput">
-                        <option value="" selected disabled>誰</option>
+                        <option value="" selected disabled><span>誰</span></option>
                     </select>が<br>
                     <div id="whoseBox"></div>
                     <div id="no">の</div>
                     <input type="text" id="addWhatInput" placeholder="タクシー代">を払って、<br>
-                    <input type="text" id="addHowMuchInput" placeholder="いくら">かかった。<br>
+                    <input type="text" id="addHowMuchInput" placeholder="いくら(円)">かかった。<br>
                     <button type="button" id="addHistoryBtn" onclick="addHistory()">追加</button>
                 </div>
             </div>
@@ -248,6 +248,9 @@
     function addMember() {
         const getNewMember = document.getElementById("addMemberInput");
         const newMember = getNewMember.value;
+        if (newMember == "") {
+            return alert("メンバー名を入力してください");
+        }
         getNewMember.value = "";
 
         const list = localStorage.getItem("memberList");
@@ -267,6 +270,11 @@
         const getWho = document.getElementById("addWhoInput");
         const newWhoIndex = getWho.value;
 
+        if (newWhoIndex == "") {
+            return alert("支払いメンバーを選択してください");
+        }
+
+
         const getDMList = localStorage.getItem("memberList");
         const dMList = JSON.parse(getDMList);
         const newWho = dMList[newWhoIndex];
@@ -284,9 +292,15 @@
 
         const getWhat = document.getElementById("addWhatInput");
         const newWhat = getWhat.value;
+        if (newWhat == "") {
+            return alert("支払い内容を入力してください");
+        }
 
         const getHowMuch = document.getElementById("addHowMuchInput");
         const newHowMuch = getHowMuch.value;
+        if (newHowMuch == "") {
+            return alert("支払い金額を入力してください");
+        }
         if (!newHowMuch.match(/^[0-9]+$/)) {
             return alert("0～9の半角数字を入力してください");
         }
