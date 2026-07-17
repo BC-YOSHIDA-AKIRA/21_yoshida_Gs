@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Firebase:v9:Chatアプリ</title>
+</head>
+
+<body>
+    <audio id="post" src="img/post.mp3"></audio>
+
+    <!-- コンテンツ表示画面 -->
+
+    <div>
+        <div id="head">
+            <div id="imageFrameTop" class="circle-frame"></div>
+            <select id="imageSelect">
+                <option value="img/kora.png" selected style="background-color: #ff3c3c;"><span>コラショ</span></option>
+                <option value="img/shima.jpg" style="background-color: #ffc001;"><span>しまじろう</span></option>
+            </select>
+        </div>
+        <div id="output"></div>
+
+        <div id="inputBox">
+            <div id="imageFrameBottom" class="circle-frame"></div>
+            <div id="textBox"><textarea id="text"></textarea></div>
+            <img id="send" src="img/send.png"></img>
+        </div>
+
+    </div>
+    <!--/ コンテンツ表示画面 -->
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- JQuery -->
+
+
+    <!--** 以下Firebase **-->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved, get, query }
+            from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+        import { firebaseConfig } from "key.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app); // RealtimeDatabase使うよ
+        const dbRef = ref(db, "chat"); // RealtimeDatabase”chat“を使うよ
+
+        const select = document.getElementById('imageSelect');
+
+        const frameTop = document.getElementById('imageFrameTop');
+        const frameBottom = document.getElementById('imageFrameBottom');
+        const textBack = document.getElementById('output');
+        const headBack = document.getElementById('head');
+        const inputBack = document.getElementById('inputBox');
+        const selectBack = document.getElementById('imageSelect');
+
+        window.onload = change(select.value);
+
+
+        select.addEventListener('change', function () {
+            change(this.value);
+            renderChat();
+        });
+
+        //送信イベント
+        $("#send").on("click", function () {
+            const msg = {
+                imageSelect: $("#imageSelect").val(),
+                text: $("#text").val()
+            }
+            // alert(msg.uname + msg.text);
+            const newPostRef = push(dbRef); //ユニークKEYを生成
+            set(newPostRef, msg);           //key,Valueの関係
+            document.getElementById('text').value = "";
+
+            var audio = document.getElementById("post");
+            audio.currentTime = 0;
+            audio.play();
+
+        });
+
+        function change(value) {
+            if (value == "img/kora.png") {
+                frameTop.style.backgroundImage = `url(${value})`;
+                frameBottom.style.backgroundImage = "url(img/shima.jpg)";
+                textBack.style.backgroundImage = "url(img/shimaBack.png)";
+                headBack.style.backgroundColor = "#ffc001";
+                inputBack.style.backgroundColor = "#ffc001";
+                selectBack.style.backgroundColor = "#ffc001";
+            } else {
+                frameTop.style.backgroundImage = `url(${value})`;
+                frameBottom.style.backgroundImage = "url(img/kora.png)";
+                textBack.style.backgroundImage = "url(img/koraBack.png)";
+                headBack.style.backgroundColor = "#ff3c3c";
+                inputBack.style.backgroundColor = "#ff3c3c";
+                selectBack.style.backgroundColor = "#ff3c3c";
+            }
+        }
+
+        function displayText(msg) {
+            // const key = data.key;      //データのユニークキー（削除や更新に使用可能）
+            let h = "";
+
+            //表示用テキスト・HTMLを作成
+            if (msg.imageSelect == "img/kora.png") {
+                if (select.value == "img/kora.png") {
+                    h = `<p class="bg shima right">`;
+                } else {
+                    h = `<p class="bg shima left">`;
+                }
+            } else {
+                if (select.value == "img/shima.jpg") {
+                    h = `<p class="bg kora right">`;
+                } else {
+                    h = `<p class="bg kora left">`;
+                }
+            }
+
+
+            h += msg.text;
+            h += '</p>';
+            $("#output").append(h); //#outputの最後に追加
+            const target = document.getElementById("output");
+            target.scrollTop = target.scrollHeight;
+        }
+
+
+        onChildAdded(dbRef, function (data) {
+            const msg = data.val();    //オブジェクトデータを取得し、変数msgに代入
+            displayText(msg);
+        });
+
+        function renderChat() {
+            $("#output").empty();
+
+            get(dbRef).then((snapshot) => {
+                snapshot.forEach((data) => {
+                    const msg = data.val();
+                    displayText(msg); // 描画処理を関数化しておく
+                });
+            });
+        }
+
+
+
+
+    </script>
+
+</body>
+
+</html>

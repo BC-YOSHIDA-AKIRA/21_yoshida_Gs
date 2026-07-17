@@ -1,0 +1,156 @@
+html {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+body {
+
+    border: 5px solid #626262;
+}
+
+p {
+    font-size: 20px;
+}
+
+/* ====================================================== */
+
+#head {
+    height: 8vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+/* 丸い枠のスタイル */
+.circle-frame {
+    height: 83%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.3s ease;
+    margin: 0px 10px;
+    z-index: 100;
+}
+
+#imageSelect {
+    height: 70%;
+    width: 200px;
+    font-size: 30px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+option:focus {
+    background-color: aqua;
+}
+
+/* ====================================================== */
+
+#output {
+    height: 80vh;
+    width: 100%;
+    overflow: auto;
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    background-size: cover;
+    background-position: center;
+}
+
+p.bg {
+    display: inline-block;
+    /* 背景を文字幅に合わせる */
+    padding: 8px 12px;
+    border-radius: 15px;
+    max-width: 70%;
+    /* 長文対策で最大幅を制限 */
+    word-wrap: break-word;
+    /* 長い単語を折り返す */
+    margin: 5px 20px;
+}
+
+
+
+.left {
+    align-self: flex-start;
+    background-color: #ffffff;
+    border-radius: 6px;
+    position: relative;
+}
+
+.left::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -29px;
+    margin-top: -10px;
+    border: 8px solid transparent;
+    border-right: 25px solid #ffffff;
+}
+
+.right {
+    background-color: #82ff28;
+    border-radius: 6px;
+    align-self: flex-end;
+    position: relative;
+}
+
+.right::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -29px;
+    margin-top: -10px;
+    border: 8px solid transparent;
+    border-left: 25px solid #82ff28;
+}
+
+/* ====================================================== */
+
+#inputBox {
+    height: 8vh;
+    display: flex;
+    align-items: center;
+    /* background-color: #ffc001; */
+}
+
+#textBox {
+    height: 80%;
+    width: 100%;
+    border-radius: 20px;
+    border: none;
+    margin-right: 1vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+}
+
+#text {
+    height: 75%;
+    width: 100%;
+    resize: none;
+    scrollbar-width: none;
+    font-size: 30px;
+    margin: 0px 10px;
+    border: none;
+    outline: none;
+    background-color: #ffffff;
+}
+
+#send {
+    height: 70%;
+    aspect-ratio: 1 / 1;
+    margin-right: 1vw;
+}
+
+#send:hover {
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+    -ms-filter: "alpha(opacity=70)";
+}
