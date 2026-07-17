@@ -42,18 +42,12 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved, get, query }
             from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
+        import { firebaseConfig } from "key.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
 
         // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: ENV['API_KEY'],
-            authDomain: "test01-736b6.firebaseapp.com",
-            projectId: "test01-736b6",
-            storageBucket: "test01-736b6.firebasestorage.app",
-            messagingSenderId: "33574402093",
-            appId: "1:33574402093:web:3ed5dd6f8c761b601820a4"
-        };
+
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
