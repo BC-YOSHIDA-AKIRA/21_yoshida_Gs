@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/style.css">
     <title>Firebase:v9:Chatアプリ</title>
+    <script src="js/firebaseConfig.js"></script>
 </head>
 
 <body>
@@ -17,14 +18,29 @@
             <div id="imageFrameTop" class="circle-frame"></div>
             <select id="imageSelect">
                 <option value="img/kora.png" selected style="background-color: #ff3c3c;"><span>コラショ</span></option>
-                <option value="img/shima.jpg" style="background-color: #ffc001;"><span>しまじろう</span></option>
+                <option value="img/shima.png" style="background-color: #ffc001;"><span>しまじろう</span></option>
             </select>
         </div>
         <div id="output"></div>
 
+        <div id="stampBoxKora">
+            <div class="stampList">
+                <img class="image" src="img/koraHappy.png">
+                <img class="image" src="img/koraGood.png">
+                <img class="image" src="img/koraSad.png">
+            </div>
+        </div>
+        <div id="stampBoxShima">
+            <div class="stampList">
+                <img class="image" src="img/shimaHappy.png">
+                <img class="image" src="img/shimaGood.png">
+                <img class="image" src="img/shimaSad.png">
+            </div>
+        </div>
         <div id="inputBox">
             <div id="imageFrameBottom" class="circle-frame"></div>
             <div id="textBox"><textarea id="text"></textarea></div>
+            <img id="stamp" src="img/stamp.png"></img>
             <img id="send" src="img/send.png"></img>
         </div>
 
@@ -38,24 +54,23 @@
 
     <!--** 以下Firebase **-->
     <script type="module">
-        // Import the functions you need from the SDKs you need
+        // ==========================================
+        // 1. Firebase 初期化・参照設定
+        // ==========================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-        import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved, get, query }
+        import { getDatabase, ref, push, set, onChildAdded, onChildChanged, remove, onChildRemoved, get, query, update }
             from "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
-        import { firebaseConfig } from "key.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-
-        // Your web app's Firebase configuration
-
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app); // RealtimeDatabase使うよ
         const dbRef = ref(db, "chat"); // RealtimeDatabase”chat“を使うよ
 
-        const select = document.getElementById('imageSelect');
 
+        // ==========================================
+        // 2. DOM要素の取得
+        // ==========================================
+        const select = document.getElementById('imageSelect');
         const frameTop = document.getElementById('imageFrameTop');
         const frameBottom = document.getElementById('imageFrameBottom');
         const textBack = document.getElementById('output');
@@ -63,8 +78,107 @@
         const inputBack = document.getElementById('inputBox');
         const selectBack = document.getElementById('imageSelect');
 
-        window.onload = change(select.value);
+        // 1. キャラクター設定
+        const CHARA_MAP = {
+            "img/kora.png": { name: "shima", class: "shima" },
+            "img/shima.png": { name: "kora", class: "kora" }
+        };
 
+
+        // ==========================================
+        // 3. ユーティリティ関数
+        // ==========================================
+
+        /** 現在時刻を HH:mm 形式で取得する */
+        function getNowTime() {
+            const now = new Date();
+            return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
+
+        /** チャット画面を一番下までスクロールする */
+        function pageScroll() {
+            setTimeout(() => {
+                const target = document.getElementById("output");
+                if (target) target.scrollTop = target.scrollHeight;
+            }, 100);
+        }
+
+        /** 画面のテーマカラーと背景画像を切り替える */
+        function change(value) {
+            const isKora = (value === "img/kora.png");
+            frameTop.style.backgroundImage = `url(${value})`;
+            frameBottom.style.backgroundImage = isKora ? "url(img/shima.png)" : "url(img/kora.png)";
+            textBack.style.backgroundImage = isKora ? "url(img/shimaBack.png)" : "url(img/koraBack.png)";
+            const color = isKora ? "#ffc001" : "#ff3c3c";
+            headBack.style.backgroundColor = inputBack.style.backgroundColor = selectBack.style.backgroundColor = color;
+        }
+
+
+        // ==========================================
+        // 4. チャット描画・メッセージ処理
+        // ==========================================
+
+        /** メッセージHTMLを生成する */
+        function createHtml(msg, charaClass, isRight) {
+            const readStatus = msg.read === 1 ? "既読" : " ";
+            const timeClass = isRight ? "time" : "timeLeft";
+            const alignClass = isRight ? "divRight" : "divLeft";
+            const bubbleClass = isRight ? `bg ${charaClass} right` : `bg ${charaClass} left`;
+            const content = msg.type === 0 ? `<p class="${bubbleClass}">${msg.text}</p>` : `<img class="displayStamp" src="${msg.text}">`;
+
+            return isRight
+                ? `<div class="${alignClass}"><div><p class="read">${readStatus}</p><p class="${timeClass}">${msg.sendTime}</p></div>${content}</div>`
+                : `<div class="${alignClass}">${content}<p class="${timeClass}">${msg.sendTime}</p></div>`;
+        }
+
+        /** メッセージを送信しFirebaseへ保存する */
+        function sendMessage(type, content) {
+            const msg = {
+                imageSelect: $("#imageSelect").val(),
+                sendTime: getNowTime(),
+                read: 0,
+                type: type,
+                text: content
+            };
+            set(push(dbRef), msg);
+            const audio = document.getElementById("post");
+            audio.currentTime = 0;
+            audio.play();
+        }
+
+
+        /** 個別のメッセージを表示・既読更新する */
+        function displayText(data) {
+            const msg = data.val();
+            const key = data.key;
+            const isMyMessage = (msg.imageSelect === select.value);
+            const chara = CHARA_MAP[msg.imageSelect];
+
+            $("#output").append(createHtml(msg, chara.class, isMyMessage));
+
+            if (!isMyMessage && msg.read === 0) {
+                update(ref(db, "chat/" + key), { read: 1 });
+            }
+            pageScroll();
+        }
+
+        /** チャット全体を再描画する */
+        function renderChat() {
+            $("#output").empty();
+
+            get(dbRef).then((snapshot) => {
+                snapshot.forEach((data) => {
+                    displayText(data);
+                });
+                pageScroll();
+            });
+        }
+
+        // ==========================================
+        // 5. イベントリスナー・初期化
+        // ==========================================
+
+        window.onload = () => change(select.value);
 
         select.addEventListener('change', function () {
             change(this.value);
@@ -73,86 +187,27 @@
 
         //送信イベント
         $("#send").on("click", function () {
-            const msg = {
-                imageSelect: $("#imageSelect").val(),
-                text: $("#text").val()
-            }
-            // alert(msg.uname + msg.text);
-            const newPostRef = push(dbRef); //ユニークKEYを生成
-            set(newPostRef, msg);           //key,Valueの関係
+            if (document.getElementById('text').value === "") return;
+            sendMessage(0, $("#text").val());
             document.getElementById('text').value = "";
-
-            var audio = document.getElementById("post");
-            audio.currentTime = 0;
-            audio.play();
-
         });
 
-        function change(value) {
-            if (value == "img/kora.png") {
-                frameTop.style.backgroundImage = `url(${value})`;
-                frameBottom.style.backgroundImage = "url(img/shima.jpg)";
-                textBack.style.backgroundImage = "url(img/shimaBack.png)";
-                headBack.style.backgroundColor = "#ffc001";
-                inputBack.style.backgroundColor = "#ffc001";
-                selectBack.style.backgroundColor = "#ffc001";
-            } else {
-                frameTop.style.backgroundImage = `url(${value})`;
-                frameBottom.style.backgroundImage = "url(img/kora.png)";
-                textBack.style.backgroundImage = "url(img/koraBack.png)";
-                headBack.style.backgroundColor = "#ff3c3c";
-                inputBack.style.backgroundColor = "#ff3c3c";
-                selectBack.style.backgroundColor = "#ff3c3c";
-            }
-        }
-
-        function displayText(msg) {
-            // const key = data.key;      //データのユニークキー（削除や更新に使用可能）
-            let h = "";
-
-            //表示用テキスト・HTMLを作成
-            if (msg.imageSelect == "img/kora.png") {
-                if (select.value == "img/kora.png") {
-                    h = `<p class="bg shima right">`;
-                } else {
-                    h = `<p class="bg shima left">`;
-                }
-            } else {
-                if (select.value == "img/shima.jpg") {
-                    h = `<p class="bg kora right">`;
-                } else {
-                    h = `<p class="bg kora left">`;
-                }
-            }
-
-
-            h += msg.text;
-            h += '</p>';
-            $("#output").append(h); //#outputの最後に追加
-            const target = document.getElementById("output");
-            target.scrollTop = target.scrollHeight;
-        }
-
-
-        onChildAdded(dbRef, function (data) {
-            const msg = data.val();    //オブジェクトデータを取得し、変数msgに代入
-            displayText(msg);
-        });
-
-        function renderChat() {
-            $("#output").empty();
-
-            get(dbRef).then((snapshot) => {
-                snapshot.forEach((data) => {
-                    const msg = data.val();
-                    displayText(msg); // 描画処理を関数化しておく
-                });
+        document.querySelectorAll(".image").forEach(img => {
+            img.addEventListener("click", event => {
+                sendMessage(1, event.target.getAttribute("src"));
+                const box = ($("#imageSelect").val() === "img/kora.png") ? "stampBoxShima" : "stampBoxKora";
+                document.getElementById(box).style.display = "none";
             });
-        }
+        });
 
+        $("#stamp").on("click", () => {
+            const box = (select.value === "img/kora.png") ? "stampBoxShima" : "stampBoxKora";
+            document.getElementById(box).style.display = "block";
+        });
 
-
-
+        // Firebase 監視
+        onChildAdded(dbRef, displayText);
+        onChildChanged(dbRef, renderChat);
     </script>
 
 </body>
