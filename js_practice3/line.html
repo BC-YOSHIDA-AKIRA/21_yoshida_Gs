@@ -187,7 +187,7 @@
 
         //送信イベント
         $("#send").on("click", function () {
-            if (text === "") return;
+            if (document.getElementById('text').value === "") return;
             sendMessage(0, $("#text").val());
             document.getElementById('text').value = "";
         });
